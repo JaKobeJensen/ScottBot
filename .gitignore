@@ -1,0 +1,4 @@
+*.pth
+*.json
+*.wav
+tts_model
