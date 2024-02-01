@@ -7,7 +7,7 @@ class TTSManager:
         device = "cuda" if torch.cuda.is_available() else "cpu"
         if model_path is not None:
             self.tts = TTS(
-                model_path=f"{model_path}/model.pth",
+                model_path=model_path,
                 config_path=f"{model_path}/config.json",
             ).to(device)
         else:
@@ -24,12 +24,13 @@ class TTSManager:
         output_file_name = (
             "output.wav" if output_file_name is None else output_file_name
         )
-        self.tts.tts_to_file(text=text, language="en", file_path=output_file_name, speaker_wav="audio/sample.wav")
+        self.tts.tts_to_file(text=text, language="en", file_path=output_file_name)
+        # self.tts.tts_to_file(text=text, language="en", file_path=output_file_name, speaker_wav="audio/sample.wav")
         return
 
 
 if __name__ == "__main__":
-    tts_manager = TTSManager(model_path="mangers/tts_model")
+    tts_manager = TTSManager(model_path="managers/tts_model") 
     text = "Hello my name is Jacob Jensen. This is a test for the text to speech to see how good it is."
     tts_manager.text_to_audio_file(text=text, output_file_name="output.wav")
     quit()
