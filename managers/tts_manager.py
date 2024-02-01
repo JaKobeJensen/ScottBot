@@ -1,5 +1,4 @@
 import torch
-from scipy.io import wavfile
 from TTS.api import TTS
 
 
@@ -8,7 +7,8 @@ class TTSManager:
         device = "cuda" if torch.cuda.is_available() else "cpu"
         if model_path is not None:
             self.tts = TTS(
-                model_path=model_path, config_path=f"{model_path}/config.json"
+                model_path=f"{model_path}/model.pth",
+                config_path=f"{model_path}/config.json",
             ).to(device)
         else:
             self.tts = TTS(
