@@ -12,6 +12,8 @@ class ScottBot:
     FIRST_SYSTEM_PROMT = "For now on you are a college computer science professor, named ScottBot, and loves to answer students questions. Make sure you follow these rules at all times: 1. make responds only one paragraph long, 2. never generate code, use words instead"
 
     def __init__(self):
+        print("[yellow]ScottBot booting up...")
+
         self.chatgpt_manager = ChatGPTManager(
             model="gpt-3.5-turbo", first_system_prompt=self.FIRST_SYSTEM_PROMT
         )
@@ -20,13 +22,16 @@ class ScottBot:
         self.audio_player_manager = AudioPlayerManager()
         self.current_question = None
 
+        print("[green]ScottBot is ready to go!\n")
+
     def listen(self, duration: int | None = None) -> str | None:
-        print("[yellow]I'm currently listening!\n")
+        print("[yellow]I'm currently listening!")
         self.current_question = self.speech_recognition_manager.speech_to_text(duration)
         if self.current_question is None:
             print("[red]Sorry I couldn't hear you.\n")
         else:
-            print("[yellow]Okay I got what you said!\n")
+            print("[green]Okay I got what you said!\n")
+            print(f"[bright_blue]This is what you said:\n{self.current_question}\n")
         return self.current_question
 
     def answer_question(self, question: str | None = None) -> dict | None:
@@ -36,8 +41,9 @@ class ScottBot:
         elif question is None and self.current_question is None:
             exit("[red]Question was not given.\n")
 
+        print(f"[yellow]Forming an answer to your question...\n")
         response = self.chatgpt_manager.chat_with_history(question)
-        print(f"[green]{response}\n")
+        print(f"[green]My Ans{response}\n")
 
         audio = self.tts_manager.text_to_speech(response)
 

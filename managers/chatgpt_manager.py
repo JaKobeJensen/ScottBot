@@ -32,7 +32,7 @@ def num_tokens_from_messages(
 
 
 class ChatGPTManager:
-    TOKEN_LIMIT = 8000
+    TOKEN_LIMIT = 1000
 
     def __init__(
         self, model: str = "gpt-3.5-turbo", first_system_prompt: str | None = None
@@ -52,51 +52,59 @@ class ChatGPTManager:
 
     # Asks a question with no chat history
     def chat(self, prompt: str | None = None) -> str | None:
-        if prompt is not None:
-            print("Didn't receive input!")
+        if prompt is None or prompt == "":
+            print("[bright_red]Didn't receive input!\n")
             return None
 
         # Check that the prompt is under the token context limit
         chat_question = [{"role": "user", "content": prompt}]
         if num_tokens_from_messages(chat_question, self.model) > self.TOKEN_LIMIT:
-            print("The length of this chat question is too large for the GPT model")
+            print(
+                f"[bright_red]Current question exceeds the token limit of {self.TOKEN_LIMIT}\n"
+            )
+            print(
+                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}"
+            )
             return None
 
-        print("[yellow]\nAsking ChatGPT a question...")
+        # Generate response
         completion = self.client.chat.completions.create(
-            model=self.model, messages=chat_question
+            model=self.model, messages=[self.FIRST_SYSTEM_MESSAGE, chat_question]
         )
 
-        # Process the answer
-        chatgpt_answer = completion.choices[0].message.content
-        print(f"[green]\n{chatgpt_answer}\n")
-        return chatgpt_answer
+        # Process the response
+        chatgpt_response = completion.choices[0].message.content
+        return chatgpt_response
 
     # Asks a question that includes the full conversation history
     def chat_with_history(self, prompt: str | None = None) -> str | None:
-        if not prompt:
-            print("Didn't receive input!")
+        if prompt is None or prompt == "":
+            print("[bright_red]Didn't receive input!")
+            return None
+
+        # Check that the prompt is under the token context limit
+        chat_question = [{"role": "user", "content": prompt}]
+        if num_tokens_from_messages(chat_question, self.model) > self.TOKEN_LIMIT:
+            print(
+                f"[bright_red]The question exceeds the token limit of {self.TOKEN_LIMIT}\n"
+            )
+            print(
+                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}"
+            )
             return None
 
         # Add our prompt into the chat history
-        self.current_chat_history.append({"role": "user", "content": prompt})
+        self.current_chat_history.append(chat_question)
 
-        # Check total token limit. Remove old messages as needed
-        print(
-            f"[red]\nChat History has a current token length of {num_tokens_from_messages(self.current_chat_history, self.model)}"
-        )
+        # Check to see if the chat history is above our token limit
         while (
             num_tokens_from_messages(self.current_chat_history, self.model)
             > self.TOKEN_LIMIT
         ):
-            self.current_chat_history.pop(
-                1
-            )  # We skip the 1st message since it's the system message
-            print(
-                f"[red]Popped a message! New token length is: {num_tokens_from_messages(self.current_chat_history, self.model)}"
-            )
+            # We skip the 1st message since it's the system message
+            self.current_chat_history.pop(1)
 
-        print("[yellow]\nAsking ChatGPT a question...")
+        # Generate response
         completion = self.client.chat.completions.create(
             model=self.model, messages=self.current_chat_history
         )
@@ -109,9 +117,8 @@ class ChatGPTManager:
             }
         )
 
-        # Process the answer
+        # Process the response
         chatgpt_answer = completion.choices[0].message.content
-        print(f"[green]\n{chatgpt_answer}\n")
         return chatgpt_answer
 
     def start_new_conversation(self) -> None:

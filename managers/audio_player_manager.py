@@ -13,11 +13,11 @@ class AudioPlayerManager:
         pygame.mixer.init(self.SAMPLE_RATE, self.BITS_PER_SAMPLE, self.CHANNELS)
 
     def play_audio(self, audio_data: list[int], wait_for_sound: bool = False) -> None:
-        self.play_audio(pygame.sndarray.make_sound(audio_data, wait_for_sound))
+        self.play_sound(pygame.sndarray.make_sound(audio_data, wait_for_sound))
         return
 
     def play_audio_file(self, audio_file: str, wait_for_sound: bool = False) -> None:
-        self.play_audio(pygame.mixer.Sound(audio_file, wait_for_sound))
+        self.play_sound(pygame.mixer.Sound(audio_file, wait_for_sound))
         return
 
     def play_sound(self, sound: Sound, wait_for_sound: bool = False) -> None:
