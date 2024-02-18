@@ -21,10 +21,10 @@ class SpeechRecognitionManager:
                 audio_data = self.recognizer.listen(source=source, timeout=duration)
             return audio_data
         except UnknownValueError:
-            print("[bright_red]Unable to recognize microphone audio")
+            print("[bright_red]Unable to recognize microphone audio\n")
             return None
         except WaitTimeoutError:
-            print("[bright_red]Timeout")
+            print("[bright_red]Timeout\n")
             return None
 
     def audio_to_text(self, audio_data: list[int]) -> str:
@@ -41,11 +41,3 @@ class SpeechRecognitionManager:
         if audio_data is None:
             return None
         return self.audio_to_text(audio_data)
-
-
-if __name__ == "__main__":
-    speech_recognize_manager = SpeechRecognitionManager(whisper_model="base")
-    # text = speech_recognize_manager.speech_to_text(duration=5)
-    text = speech_recognize_manager.audio_to_text(audio_file="sample.wav")
-    print(text)
-    quit()

@@ -1,6 +1,6 @@
 import unittest
 
-from managers import AudioPlayerManager, TTSManager
+from ..managers import AudioPlayerManager, TTSManager
 
 
 class TestTTSManager(unittest.TestCase):
@@ -10,9 +10,11 @@ class TestTTSManager(unittest.TestCase):
     MODEL_PATH = "managers/jacob/tts_model"
 
     def __init__(self):
+        print("Loading TTS Models...")
         self.custom_tts_manager = TTSManager(model_path=self.MODEL_PATH)
         self.defualt_tts_manager = TTSManager()
         self.audio_player = AudioPlayerManager()
+        print("TTS Models Loaded\n")
 
     def test_text_to_speech_custom(self):
         print("Testing text to speech with custom model")

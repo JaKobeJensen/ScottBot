@@ -58,12 +58,14 @@ class ChatGPTManager:
 
         # Check that the prompt is under the token context limit
         chat_question = [{"role": "user", "content": prompt}]
-        if num_tokens_from_messages(chat_question, self.model) > self.TOKEN_LIMIT:
+        if num_tokens_from_messages(
+            chat_question, self.model
+        ) > self.TOKEN_LIMIT - num_tokens_from_messages(self.FIRST_SYSTEM_MESSAGE):
             print(
-                f"[bright_red]Current question exceeds the token limit of {self.TOKEN_LIMIT}\n"
+                f"[bright_red]Current question exceeds the token limit of {self.TOKEN_LIMIT}"
             )
             print(
-                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}"
+                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}\n"
             )
             return None
 
@@ -79,17 +81,19 @@ class ChatGPTManager:
     # Asks a question that includes the full conversation history
     def chat_with_history(self, prompt: str | None = None) -> str | None:
         if prompt is None or prompt == "":
-            print("[bright_red]Didn't receive input!")
+            print("[bright_red]Didn't receive input!\n")
             return None
 
         # Check that the prompt is under the token context limit
         chat_question = [{"role": "user", "content": prompt}]
-        if num_tokens_from_messages(chat_question, self.model) > self.TOKEN_LIMIT:
+        if num_tokens_from_messages(
+            chat_question, self.model
+        ) > self.TOKEN_LIMIT - num_tokens_from_messages(self.FIRST_SYSTEM_MESSAGE):
             print(
-                f"[bright_red]The question exceeds the token limit of {self.TOKEN_LIMIT}\n"
+                f"[bright_red]The question exceeds the token limit of {self.TOKEN_LIMIT}"
             )
             print(
-                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}"
+                f"[bright_red]Current question token size: {num_tokens_from_messages(chat_question, self.model)}\n"
             )
             return None
 
@@ -125,14 +129,3 @@ class ChatGPTManager:
         self.current_chat_history = []
         self.current_chat_history.append(self.FIRST_SYSTEM_MESSAGE)
         return None
-
-
-if __name__ == "__main__":
-    first_system_promt = "For now on you are a college computer science professor, named ScottBot, and loves to answer students questions. Make sure you follow these rules at all times: 1. make responds only one paragraph long, 2. never generate code, use words instead"
-    chatgpt_manager = ChatGPTManager(
-        model="gpt-3.5-turbo", first_system_prompt=first_system_promt
-    )
-    chatgpt_answer = chatgpt_manager.chat_with_history(
-        "Hey ScottBot, can you tell me what the cpu is?"
-    )
-    quit()
