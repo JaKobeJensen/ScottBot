@@ -6,7 +6,7 @@ from rich import print
 
 
 def num_tokens_from_messages(
-    messages: list[dict[str, str]], model: str = "gpt-4"
+    messages: list[dict[str, str]], model: str = "gpt-3.5-turbo"
 ) -> int:
     """Returns the number of tokens used by a list of messages.
     Copied with minor changes from: https://platform.openai.com/docs/guides/chat/managing-tokens
@@ -16,8 +16,8 @@ def num_tokens_from_messages(
         num_tokens = 0
         for message in messages:
             num_tokens += (
-                4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
-            )
+                4  
+            ) # every message follows <im_start>{role/name}\n{content}<im_end>\n
             for key, value in message.items():
                 num_tokens += len(encoding.encode(value))
                 if key == "name":  # if there's a name, the role is omitted
@@ -60,7 +60,7 @@ class ChatGPTManager:
         chat_question = [{"role": "user", "content": prompt}]
         if num_tokens_from_messages(
             chat_question, self.model
-        ) > self.TOKEN_LIMIT - num_tokens_from_messages(self.FIRST_SYSTEM_MESSAGE):
+        ) > self.TOKEN_LIMIT - num_tokens_from_messages([self.FIRST_SYSTEM_MESSAGE]):
             print(
                 f"[bright_red]Current question exceeds the token limit of {self.TOKEN_LIMIT}"
             )
@@ -71,7 +71,7 @@ class ChatGPTManager:
 
         # Generate response
         completion = self.client.chat.completions.create(
-            model=self.model, messages=[self.FIRST_SYSTEM_MESSAGE, chat_question]
+            model=self.model, messages=[self.FIRST_SYSTEM_MESSAGE, chat_question[0]]
         )
 
         # Process the response
@@ -88,7 +88,7 @@ class ChatGPTManager:
         chat_question = [{"role": "user", "content": prompt}]
         if num_tokens_from_messages(
             chat_question, self.model
-        ) > self.TOKEN_LIMIT - num_tokens_from_messages(self.FIRST_SYSTEM_MESSAGE):
+        ) > self.TOKEN_LIMIT - num_tokens_from_messages([self.FIRST_SYSTEM_MESSAGE]):
             print(
                 f"[bright_red]The question exceeds the token limit of {self.TOKEN_LIMIT}"
             )
@@ -98,7 +98,7 @@ class ChatGPTManager:
             return None
 
         # Add our prompt into the chat history
-        self.current_chat_history.append(chat_question)
+        self.current_chat_history.append(chat_question[0])
 
         # Check to see if the chat history is above our token limit
         while (

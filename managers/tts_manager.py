@@ -38,7 +38,7 @@ class TTSManager:
                 text=text,
                 language="en",
                 file_path=output_file_name,
-                speaker_wav="managers/audio/sample.wav",
+                speaker_wav=f"{self.model_path}/sample.wav",
             )
         else:
             self.tts.tts_to_file(
